@@ -46,8 +46,11 @@ async def predict(request: Request):
     # Convert predictions to tag names
     predicted_tags = [unique_tags[tag] for tag in p[0]]
 
+    # Map each word to its corresponding tag
+    word_tag_pairs = [{"word": word, "tag": tag} for word, tag in zip(sentence_words, predicted_tags[:len(sentence_words)])]
+
     # Return results
-    return {"sentence": sentence, "predicted_tags": predicted_tags}
+    return {"sentence": sentence, "word_tag_pairs": word_tag_pairs}
 
 if __name__ == "__main__":
     import uvicorn
