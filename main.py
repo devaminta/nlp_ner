@@ -19,6 +19,16 @@ with open("unique_tags.json", "r") as f:
 
 max_len = 50  # Same as during training
 
+# GET method to check API status
+@app.get("/")
+def read_root():
+    return {
+        "message": "Welcome to the Amharic NER API!",
+        "status": "API is live and running.",
+        "usage": "Send a POST request to /predict with a JSON body containing a 'sentence' key."
+    }
+
+# POST method for prediction
 @app.post("/predict")
 async def predict(request: Request):
     data = await request.json()
