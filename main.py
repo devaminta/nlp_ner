@@ -2,10 +2,19 @@ from fastapi import FastAPI, Request
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from fastapi.middleware.cors import CORSMiddleware  #
 import json
 
 app = FastAPI()
 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins (replace with your frontend URL in production)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 # Load the model
 model = tf.keras.models.load_model("amharic_ner_model.h5")
 
