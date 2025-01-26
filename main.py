@@ -2,17 +2,20 @@ from fastapi import FastAPI, Request
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.preprocessing.sequence import pad_sequences
-import uvicorn
+import json
 
 app = FastAPI()
 
 # Load the model
 model = tf.keras.models.load_model("amharic_ner_model.h5")
 
-# Load word2idx, tag2idx, unique_words, unique_tags
-word2idx = {"your": "word2idx", "dictionary": "here"}  # Replace with your word2idx
-tag2idx = {"your": "tag2idx", "dictionary": "here"}  # Replace with your tag2idx
-unique_tags = ["your", "unique", "tags", "here"]  # Replace with your unique_tags
+# Load word2idx, tag2idx, unique_tags
+with open("word2idx.json", "r") as f:
+    word2idx = json.load(f)
+with open("tag2idx.json", "r") as f:
+    tag2idx = json.load(f)
+with open("unique_tags.json", "r") as f:
+    unique_tags = json.load(f)
 
 max_len = 50  # Same as during training
 
@@ -28,4 +31,14 @@ async def predict(request: Request):
 
     # Predict the tags
     p = model.predict(padded_sentence)
-    p = np.argmax
+    p = np.argmax(p, axis=-1)
+
+    # Convert predictions to tag names
+    predicted_tags = [unique_tags[tag] for tag in p[0]]
+
+    # Return results
+    return {"sentence": sentence, "predicted_tags": predicted_tags}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
